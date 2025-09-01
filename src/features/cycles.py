@@ -1,6 +1,6 @@
 import pandas as pd
-from typing import Tuple
 from src.types.enums import TxState
+import numpy as np
 
 def _mark_purchase_events(df: pd.DataFrame) -> pd.Series:
     return df["state"].isin([TxState.PURCHASED, TxState.IN_PANTRY])
@@ -13,7 +13,7 @@ def build_cycles(items_df: pd.DataFrame, pantry_df: pd.DataFrame) -> pd.DataFram
         ])
 
     items_df = items_df.copy()
-    items_df["created_at"] = pd.to_datetime(items_df["created_at"])
+    items_df["created_at"] = pd.to_datetime(items_df["created_at"], errors="coerce", utc=True)
     items_df.sort_values(["user_id","product_id","created_at"], inplace=True)
 
     pantry_key = pantry_df.set_index(["user_id","product_id"]) if not pantry_df.empty else None
@@ -48,11 +48,16 @@ def build_cycles(items_df: pd.DataFrame, pantry_df: pd.DataFrame) -> pd.DataFram
                 if grp.loc[k,"state"] in [TxState.PURCHASED, TxState.IN_PANTRY]:
                     quantity_bought += (grp.loc[k,"portion"] or 0)
 
-            valid_for_days = 999
+            valid_for_days = np.nan
+            has_validity_info = 0.0
+
             if pantry_key is not None and (u,p) in pantry_key.index:
                 v = pantry_key.loc[(u,p),"valid_for_days"]
                 try:
-                    valid_for_days = float(v)
+                    vf = float(v)
+                    if np.isfinite(vf) and vf > 0:
+                        valid_for_days = vf
+                        has_validity_info = 1.0
                 except Exception:
                     pass
 
@@ -63,11 +68,12 @@ def build_cycles(items_df: pd.DataFrame, pantry_df: pd.DataFrame) -> pd.DataFram
             rows.append({
                 "user_id": u,
                 "product_id": p,
-                "purchase_time": purchase_time,
+                "purchase_time": purchase_time ,
                 "next_in_cart_time": next_in_cart_time,
                 "quantity_bought": float(quantity_bought or 0),
                 "had_removed_between": had_removed_between,
-                "valid_for_days": float(valid_for_days),
+                "valid_for_days": valid_for_days,
+                "has_validity_info": has_validity_info,
                 "days_to_restock": days_to_restock
             })
 
