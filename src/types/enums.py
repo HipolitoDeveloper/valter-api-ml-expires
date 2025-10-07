@@ -5,3 +5,6 @@ class TxState(str, Enum):
     PURCHASED = "PURCHASED"
     IN_PANTRY = "IN_PANTRY"
     REMOVED = "REMOVED"
+    UPDATE     = "UPDATE"
+    EXPIRED = "EXPIRED"
+    OUT = "OUT"

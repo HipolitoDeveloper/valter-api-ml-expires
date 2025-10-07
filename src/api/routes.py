@@ -20,9 +20,15 @@ def predict(req: PredictionRequest):
     if df.empty:
         return PredictionResponse(user_id=req.user_id, items=[])
 
-    items = [ItemPrediction(product_id=str(r.product_id),
-                            probability_out_or_expired=float(r.probability))
-             for r in df.itertuples(index=False)]
+    items = [
+        ItemPrediction(
+            product_id=str(r.product_id),
+            probability_out_or_expired=f"{float(r.probability):.6f}",
+            last_notification_at=str(r.last_notification_at),
+            days_since_purchase=f"{float(r.days_since_purchase):.6f}"
+        )
+        for r in df.itertuples(index=False)
+    ]
     return PredictionResponse(user_id=req.user_id, items=items)
 
 
