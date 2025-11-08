@@ -1,8 +1,8 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/index.py": { "runtime": "python3.11" }
-  },
-  "env": {
-    "PYTHONPATH": "."
+    "api/**/*.py": {
+      "excludeFiles": "{tests/**,__tests__/**,**/*.test.py,**/test_*.py,fixtures/**,__fixtures__/**,static/**,assets/**}"
+    }
   }
 }
