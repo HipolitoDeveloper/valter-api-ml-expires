@@ -1,6 +1,10 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "src/main.py": { "runtime": "python3.12" }
+    "src/**/*.py": {
+      "excludeFiles": "{tests/**,__tests__/**,**/*.test.py,**/test_*.py,fixtures/**,__fixtures__/**,testdata/**,static/**,assets/**}",
+      "maxDuration": 10
+    }
   },
   "routes": [
     { "src": "/(.*)", "dest": "/api/app.py" }
