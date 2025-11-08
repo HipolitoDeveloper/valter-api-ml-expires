@@ -1,22 +1,11 @@
-# api/index.py
-import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from src.api import routes
+from fastapi import APIRouter
 
-app = FastAPI(title="Valter - Expiry/Out-of-Stock (sanity)")
+app = FastAPI(title="Valter - Expiry/Out-of-Stock", root_path="/api")
 
-@app.get("/health")
-def health():
-    return {
-        "ok": True,
-        "python": os.getenv("PYTHON_VERSION", "unknown"),
-    }
+@app.get("/")
+def root():
+    return {"ok": True, "service": "valter-ml-expires"}
 
-# Tente importar suas rotas *depois* de validar que a função sobe
-try:
-    from src.api import routes  # precisa de __init__.py nos dirs
-    app.include_router(routes.router)
-except Exception as e:
-    # Ajuda a ver o erro nos logs sem derrubar o processo
-    import sys, traceback
-    print("ROUTES_IMPORT_ERROR:", e, file=sys.stderr)
-    traceback.print_exc()
+app.include_router(routes.router)
