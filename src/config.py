@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     MODEL_DIR: str = Field(default="models")
     MODEL_NAME: str = Field(default="ml_expires.joblib")
     AWS_BUCKET_NAME: str = Field(default="", description="S3 bucket for model storage (empty = local filesystem)")
+    AWS_REGION: str = Field(default="us-east-1", description="AWS region for deployment")
 
     class Config:
         env_file = ".env"

@@ -1,15 +1,15 @@
-# src/pipeline/infer.py
+# src/pipeline/predict.py
 from __future__ import annotations
 import pandas as pd
 import numpy as np
 from datetime import datetime, timezone
 
-from src.db.session import get_engine
+from src.db.connection import get_engine
 from src.db.queries import fetch_item_transactions, fetch_pantry_validities
 from src.features.cycles import build_cycles
 from src.features.consumption import estimate_user_product_consumption
 from src.features.dataset import build_inference_rows
-from src.model.io import load_model
+from src.model.storage import load_model
 from src.model.estimator import predict_proba_positive
 
 PURCHASE_STATES = {"PURCHASED", "IN_PANTRY"}

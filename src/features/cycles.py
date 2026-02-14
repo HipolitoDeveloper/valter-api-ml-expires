@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from src.types.enums import TxState
+from src.schemas.enums import TxState
 
 PURCHASE_STATES = {TxState.PURCHASED, TxState.IN_PANTRY}
 ANCHOR_STATES   = {TxState.IN_CART, TxState.PURCHASED, TxState.IN_PANTRY}

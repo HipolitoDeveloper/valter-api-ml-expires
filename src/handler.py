@@ -14,7 +14,7 @@ def _init():
     global _INITIALIZED
     if _INITIALIZED:
         return
-    from src.model.io import load_model
+    from src.model.storage import load_model
     try:
         load_model()
     except Exception:
@@ -33,7 +33,7 @@ def handle_predict(event, context):
         if not user_id:
             return _response(400, {"error": "user_id is required"})
 
-        from src.pipeline.infer import predict_for_user
+        from src.pipeline.predict import predict_for_user
         df = predict_for_user(user_id)
 
         if df.empty:

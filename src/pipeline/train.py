@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
-from src.db.session import get_engine
+from src.db.connection import get_engine
 from src.db.queries import (
     fetch_item_transactions,
     fetch_pantry_validities,
@@ -15,7 +15,7 @@ from src.features.dataset import (
     build_feedback_supervised_dataset,
 )
 from src.model.estimator import build_classifier, build_baseline
-from src.model.io import save_model
+from src.model.storage import save_model
 
 FEATURE_COLS = [
     "quantity_bought", "valid_for_days", "has_validity_info",

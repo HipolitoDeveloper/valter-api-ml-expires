@@ -1,7 +1,7 @@
 import os
 import tempfile
 import joblib
-from src.core.config import settings
+from src.config import settings
 
 _S3_CLIENT = None
 

@@ -5,7 +5,7 @@ frameworkVersion: '3'
 provider:
   name: aws
   architecture: x86_64
-  region: us-east-1
+  region: ${env:AWS_REGION, 'us-east-1'}
   memorySize: 512
   timeout: 29
   environment:
