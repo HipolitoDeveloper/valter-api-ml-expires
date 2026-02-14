@@ -1,17 +1,8 @@
-FROM python:3.11-slim
+FROM public.ecr.aws/lambda/python:3.12
 
-WORKDIR /src
+COPY requirements.txt ${LAMBDA_TASK_ROOT}/
+RUN pip install --no-cache-dir -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential curl libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+COPY src/ ${LAMBDA_TASK_ROOT}/src/
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 8082
-
-# --host 0.0.0.0 é essencial no Docker; --reload só em dev
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8082"]
+CMD ["src.handler.handle_predict"]
