@@ -154,14 +154,23 @@ def _fallback_latest_purchases_X(
 
 # ---------- função pública ----------
 
-def predict_for_user(user_id: str) -> pd.DataFrame:
-    engine = get_engine()
-    items = fetch_item_transactions(engine)
-    pantry = fetch_pantry_validities(engine)
+def predict_for_user(
+    user_id: str,
+    items: pd.DataFrame = None,
+    pantry: pd.DataFrame = None,
+) -> pd.DataFrame:
+    _needs_normalize = items is None or pantry is None
+    if _needs_normalize:
+        engine = get_engine()
+        if items is None:
+            items = fetch_item_transactions(engine)
+        if pantry is None:
+            pantry = fetch_pantry_validities(engine)
 
-    # normalizar
-    items = _normalize_items_df(items)
-    pantry = _normalize_pantry_df(pantry)
+    # normalizar apenas quando os dados vieram crus do DB
+    if _needs_normalize:
+        items = _normalize_items_df(items)
+        pantry = _normalize_pantry_df(pantry)
 
     user_id_s = str(user_id).strip()
     items["user_id"] = items["user_id"].astype(str).str.strip()

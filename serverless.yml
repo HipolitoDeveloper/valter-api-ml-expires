@@ -1,0 +1,68 @@
+service: valter-ml
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.12
+  architecture: x86_64
+  region: us-east-1
+  memorySize: 512
+  timeout: 29
+  environment:
+    DATABASE_URL: ${env:DATABASE_URL}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME, ''}
+    MODEL_NAME: ${env:MODEL_NAME, 'ml_expires.joblib'}
+    MODEL_DIR: /tmp
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+          Resource: arn:aws:s3:::${env:AWS_BUCKET_NAME, 'placeholder'}/*
+
+package:
+  individually: false
+  patterns:
+    - 'src/**'
+    - '!src/main.py'
+    - '!src/api/**'
+    - '!tests/**'
+    - '!.github/**'
+    - '!.git/**'
+    - '!**/__pycache__/**'
+    - '!*.md'
+    - '!api/**'
+    - '!.vercel/**'
+    - '!.venv/**'
+    - '!Dockerfile'
+    - '!vercel.json'
+    - '!models/**'
+
+functions:
+  predict:
+    handler: src/handler.handle_predict
+    events:
+      - httpApi:
+          method: POST
+          path: /predict
+
+  train:
+    handler: src/handler.handle_train
+    timeout: 900
+    memorySize: 1024
+    events:
+      - schedule:
+          rate: cron(0 6 ? * MON *)
+          enabled: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+    strip: false
