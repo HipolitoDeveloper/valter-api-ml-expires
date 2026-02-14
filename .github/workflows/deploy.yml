@@ -49,5 +49,6 @@ jobs:
       - name: Deploy to AWS Lambda
         run: serverless deploy --stage prod --verbose
         env:
+          DOCKER_BUILDKIT: '0'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
